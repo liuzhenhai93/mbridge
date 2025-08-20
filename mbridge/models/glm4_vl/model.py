@@ -12,6 +12,7 @@ from megatron.core.transformer.transformer_config import TransformerConfig
 
 from .transformer_config import GLM4VLTransformerConfig
 from .vl_mixin import VLMixin
+from transformers import PreTrainedModel
 
 
 class Glm4VLModel(MegatronModule, VLMixin):
@@ -38,6 +39,7 @@ class Glm4VLModel(MegatronModule, VLMixin):
         language_vocab_size: int,
         language_max_sequence_length: int,
         vision_config: TransformerConfig,
+        hf_vision_cls: type,
         parallel_output: bool = True,
         language_rotary_percent: float = 1.0,
         pre_process: bool = True,
@@ -53,7 +55,7 @@ class Glm4VLModel(MegatronModule, VLMixin):
         self.vision_model = None
 
         if self.pre_process:
-            self.vision_model = Glm4vVisionModel._from_config(vision_config)
+            self.vision_model = hf_vision_cls._from_config(vision_config)
 
         self.language_model = GPTModel(
             config=transformer_config,
